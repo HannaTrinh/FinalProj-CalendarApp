@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Calendar</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">Welcome, <%= user %>!</h1>
+    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+    <h2>Your Events:</h2>
+    <ul class="list-group">
+        <% events.forEach(event => { %>
+        <li class="list-group-item">
+            <strong><%= event.title %></strong>: <%= event.description %> (on <%= event.date.toDateString() %>)
+            <form action="/events/delete/<%= event._id %>" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+            <a href="/events/edit/<%= event._id %>" class="btn btn-warning btn-sm">Edit</a>
+        </li>
+        <% }) %>
+    </ul>
+    <h3>Add New Event</h3>
+    <form action="/events/create" method="POST">
+        <div class="form-group">
+            <input type="date" class="form-control" name="date" required>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="title" placeholder="Event Title" required>
+        </div>
+        <div class="form-group">
+            <textarea class="form-control" name="description" placeholder="Event Description" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Event</button>
+    </form>
+</div>
+</body>
+</html>
