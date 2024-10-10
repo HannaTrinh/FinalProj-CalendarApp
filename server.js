@@ -10,6 +10,14 @@ dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
+console.log("MONGODB_URI:", process.env.MONGODB_URI);
+console.log("SESSION_SECRET:", process.env.SESSION_SECRET);
+
+if (!process.env.MONGODB_URI || !process.env.SESSION_SECRET) {
+  console.error("Environment variables are missing.");
+  process.exit(1); // Exiting if environment variables are missing
+}
+
 mongoose
   .connect(MONGODB_URI, {
     useNewUrlParser: true,
