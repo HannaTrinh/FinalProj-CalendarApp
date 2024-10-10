@@ -27,5 +27,11 @@ const authRoutes = require('./routes/auth');
 const eventRoutes = require('./routes/events');
 app.use('/auth', authRoutes);
 app.use('/events', eventRoutes);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).render('error', { error: 'Something went wrong!' });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
