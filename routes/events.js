@@ -41,7 +41,7 @@ router.post('/create', authMiddleware, async (req, res) => {
     console.log('POST /events/create - User:', req.user.username);
     const { date, title, description } = req.body;
     const eventDate = new Date(date);
-    const newEvent = new Event({ date, title, description, user: req.session.user._id });
+    const newEvent = new Event({ date, title, description, user: req.user._id });
     try {
         await newEvent.save();
         console.log('Event created:', newEvent);
