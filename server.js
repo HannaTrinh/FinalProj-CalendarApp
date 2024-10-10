@@ -19,7 +19,11 @@ app.use(session({
   secret: 'secretkey',
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production'
+  }
 }));
 
 app.set('view engine', 'ejs');

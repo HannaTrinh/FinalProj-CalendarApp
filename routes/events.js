@@ -15,6 +15,7 @@ router.get('/', authMiddleware, async (req, res) => {
     console.log('GET /events - User:', req.session.user.username);
     try {
         const events = await Event.find({ user: req.session.user._id }).sort({ date: 1 });
+        console.log(`Found ${events.length} events for user`);
         res.render('calendar', { user: req.session.user.username, events });
     } catch (error) {
         console.error(error);
