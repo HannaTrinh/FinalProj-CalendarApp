@@ -25,9 +25,10 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// app.get('/', (req, res) => {
-//   res.redirect('/auth/login');
-// });
+app.get('/', (req, res) => {
+  res.redirect('/auth/login');
+});
+
 const authRoutes = require('./routes/auth');
 const eventRoutes = require('./routes/events');
 
