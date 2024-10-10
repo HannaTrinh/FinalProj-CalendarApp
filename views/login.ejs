@@ -36,8 +36,6 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            console.log('Login form submitted');
-
             const formData = new FormData(this);
             fetch('/auth/login', {
                 method: 'POST',
@@ -45,32 +43,20 @@
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                credentials: 'same-origin'
             })
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Response data:', data);
                     if (data.error) {
                         document.getElementById('errorMessage').textContent = data.error;
                         document.getElementById('errorMessage').style.display = 'block';
-                    } else if (data.redirect) {
-                        console.log('Redirect instruction received. Redirecting to:', data.redirect);
-                        document.getElementById('successMessage').textContent = 'Login successful. Redirecting...';
-                        document.getElementById('successMessage').style.display = 'block';
-
-                        // Use setTimeout to ensure the message is displayed before redirecting
-                        setTimeout(() => {
-                            window.location.href = data.redirect;
-                        }, 2000);
+                    } else if (data.token) {
+                        // Store the token in localStorage
+                        localStorage.setItem('token', data.token);
+                        window.location.href = '/events';
                     }
                 })
                 .catch(error => {
-                    console.error('Fetch error:', error);
-                    document.getElementById('errorMessage').textContent = 'An error occurred. Please try again.';
-                    document.getElementById('errorMessage').style.display = 'block';
+                    console.error('Login error:', error);
                 });
         });
     </script>

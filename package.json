@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
-    "@types/express": "^5.0.0"
+    "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.0"
   }
 }

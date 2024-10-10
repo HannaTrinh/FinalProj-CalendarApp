@@ -1,28 +1,32 @@
 const express = require('express');
 const Event = require('../models/Event');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
-    console.log('Auth middleware - Session ID:', req.sessionID);
-    console.log('Auth middleware - Full session:', JSON.stringify(req.session, null, 2));
-    console.log('Auth middleware - Session user:', req.session.user);
-    console.log('Auth middleware - Cookies:', req.headers.cookie);
+    const token = req.headers.authorization?.split(' ')[1];
 
-    if (!req.session.user) {
-        console.log('User not authenticated, redirecting to login');
-        return res.redirect('/auth/login');
+
+    if (!token) {
+        return res.status(401).json({ error: 'Access denied. No token provided.' });
     }
-    console.log('User authenticated, proceeding to next middleware');
-    next();
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        console.error('Authentication error:', error);
+        res.status(400).json({ error: 'Invalid token' });
+    }
 };
 
 router.get('/', authMiddleware, async (req, res) => {
-    console.log('GET /events - User:', req.session.user);
+    console.log('GET /events - User:', req.user);
     try {
-        const events = await Event.find({ user: req.session.user._id }).sort({ date: 1 });
+        const events = await Event.find({ user: req.user._id }).sort({ date: 1 });
         console.log(`Found ${events.length} events for user`);
         res.render('calendar', {
-            user: req.session.user.username,
+            user: req.user.username,
             events: events
         });
     } catch (error) {

@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -33,20 +34,11 @@ router.post('/login', async (req, res) => {
             console.log('Invalid password');
             return res.status(400).json({ error: 'Invalid credentials' });
         }
-        req.session.user = { _id: user._id, username: user.username };
-        console.log('User authenticated successfully');
-        console.log('Session before save:', req.session);
-
-        req.session.save((err) => {
-            if (err) {
-                console.error('Error saving session:', err);
-                return res.status(500).json({ error: 'Error saving session' });
-            }
-            console.log('Session saved successfully');
-            console.log('Session after save:', req.session);
-            console.log('Sending redirect response');
-            res.json({ redirect: '/events' });
-        });
+        const payload = { _id: user._id, username: user.username };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+        res.json({ token });
+        // res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+        // res.json({ message: 'Login successful' });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'An error occurred during login' });
