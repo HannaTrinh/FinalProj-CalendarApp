@@ -45,17 +45,9 @@ router.post('/login', async (req, res) => {
     }
 });
 router.get('/logout', (req, res) => {
-    console.log('GET /login - Session:', req.session);
-    if (req.session.user) {
-        console.log('User already logged in, redirecting to /events');
-        return res.redirect('/events');
-    }
-    res.render('login');
+    res.redirect('login');
 });
 router.get('/login', (req, res) => {
-    if (req.session.user) {
-        return res.redirect('/events'); // Redirect if user is already logged in
-    }
     res.render('login');
 });
 router.get('/register', (req, res) => {
