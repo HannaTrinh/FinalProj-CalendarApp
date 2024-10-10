@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Edit Event</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">Edit Event</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form action="/events/edit/<%= event._id %>" method="POST">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="title" value="<%= event.title %>" required>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" name="description" required><%= event.description %></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+            <a href="/events" class="btn btn-secondary mt-2">Cancel</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
