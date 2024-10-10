@@ -6,11 +6,10 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const authMiddleware = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-
+    const token = req.cookies.token;
 
     if (!token) {
-        return res.status(401).json({ error: 'Access denied. No token provided.' });
+        return res.status(401).redirect('/auth/login');
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -18,7 +17,8 @@ const authMiddleware = (req, res, next) => {
         next();
     } catch (error) {
         console.error('Authentication error:', error);
-        res.status(400).json({ error: 'Invalid token' });
+        res.clearCookie('token');
+        res.status(401).redirect('/auth/login');
     }
 };
 
@@ -55,16 +55,17 @@ router.post('/edit/:id', authMiddleware, async (req, res) => {
     console.log('POST /events/edit/:id - User:', req.user.username);
     const { title, description } = req.body;
     try {
-        const event = await Event.findById(req.params.id);
-        if (event && event.user.toString() === req.user._id) {
-            event.title = title;
-            event.description = description;
-            await event.save();
+        const event = await Event.findOneAndUpdate(
+            { _id: req.params.id, user: req.user._id },
+            { $set: { title, description } },
+            { new: true }
+        );
+        if (event) {
             console.log('Event updated:', event);
             res.json({ success: true, message: 'Event updated successfully' });
         } else {
             console.log('Unauthorized or event not found');
-            res.status(400).json({ success: false, message: 'Unauthorized or event not found' });
+            res.status(404).json({ success: false, message: 'Unauthorized or event not found' });
         }
     } catch (error) {
         console.error(error);
@@ -74,14 +75,13 @@ router.post('/edit/:id', authMiddleware, async (req, res) => {
 router.post('/delete/:id', authMiddleware, async (req, res) => {
     console.log('POST /events/delete/:id - User:', req.user.username);
     try {
-        const event = await Event.findById(req.params.id);
-        if (event && event.user.toString() === req.user._id) {
-            await event.deleteOne();
-            console.log('Event deleted:', event);
+        const result = await Event.deleteOne({ _id: req.params.id, user: req.user._id });
+        if (result.deletedCount > 0) {
+            console.log('Event deleted');
             res.json({ success: true, message: 'Event deleted successfully' });
         } else {
             console.log('Unauthorized or event not found');
-            res.status(400).json({ success: false, message: 'Unauthorized or event not found' });
+            res.status(404).json({ success: false, message: 'Unauthorized or event not found' });
         }
     } catch (error) {
         console.error(error);

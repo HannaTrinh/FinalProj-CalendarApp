@@ -36,15 +36,19 @@ router.post('/login', async (req, res) => {
         }
         const payload = { _id: user._id, username: user.username };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
-        res.json({ token });
-        // res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-        // res.json({ message: 'Login successful' });
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000 // 1 day in milliseconds
+        });
+        res.redirect('/events');
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'An error occurred during login' });
     }
 });
 router.get('/logout', (req, res) => {
+    res.clearCookie('token');
     res.redirect('login');
 });
 router.get('/login', (req, res) => {

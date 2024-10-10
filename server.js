@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const session = require('express-session');
-const mongoStore = require('connect-mongo');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const app = express();
 const dotenv = require('dotenv');
@@ -28,28 +27,11 @@ mongoose
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-const sessionStore = mongoStore.create({
-  mongoUrl: MONGODB_URI,
-  collectionName: 'sessions'
-});
-
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: true,
-  store: sessionStore,
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-  }
-}));
+app.user(cookieParser());
 
 app.use((req, res, next) => {
-  console.log('Session ID:', req.session.id);
-  console.log('Session:', req.session);
+  console.log(`${req.method} ${req.path}`);
+  console.log('Cookies:', req.cookies);
   next();
 });
 
