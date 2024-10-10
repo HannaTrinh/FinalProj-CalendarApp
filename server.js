@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI;
+const PORT = process.env.PORT || 3000;
 
 console.log("MONGODB_URI:", process.env.MONGODB_URI);
 console.log("SESSION_SECRET:", process.env.SESSION_SECRET);
@@ -22,8 +23,14 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
-  .then(() => console.log('MongoDB Connected'))
-  .catch((err) => console.log(err));
+  .then(() => {
+    console.log('MongoDB Connected');
+    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -53,7 +60,5 @@ app.use((err, req, res, next) => {
   res.status(500).render('error', { error: 'Something went wrong!' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 module.exports = app;
