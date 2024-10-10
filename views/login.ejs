@@ -16,6 +16,7 @@
                         <%= error %>
                     </div>
                     <% } %>
+                        <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
                         <form id="login-form" action="/auth/login" method="POST">
                             <div class="form-group">
                                 <input type="text" class="form-control" name="username" placeholder="Username" required>
@@ -30,11 +31,7 @@
             </div>
         </div>
     </div>
-    <script>
-        document.getElementById('login-form').addEventListener('submit', function (e) {
-            console.log('Form submitted');
-        });
-    </script>
+    <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
 </body>
 
 </html>

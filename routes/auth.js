@@ -34,12 +34,12 @@ router.post('/login', async (req, res) => {
             console.log('Invalid password');
             return res.status(400).render('Invalid credentials');
         }
-        req.session.user = user;
+        req.session.user = { _id: user._id, username: user.username };
         console.log('Login successful, session set:', req.session);
-        return res.redirect('/events');
+        return res.json({ redirect: '/events' });
     } catch (error) {
         console.error('Login error:', error);
-        return res.status(500).render('login', { error: 'An error occurred during login' });
+        return res.status(500).json({ error: 'An error occurred during login' });
     }
 });
 router.get('/logout', (req, res) => {
