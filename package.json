@@ -23,5 +23,9 @@
     "mime": "^4.0.4",
     "mongodb": "^6.9.0",
     "mongoose": "^8.7.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.0"
   }
 }

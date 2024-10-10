@@ -11,7 +11,6 @@ router.post('/register', async (req, res) => {
         if (existingUser) {
             return res.render('register', { error: 'Username already exists' });
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ username, password: hashedPassword });
         await newUser.save();
         res.redirect('/auth/login');
@@ -62,6 +61,9 @@ router.get('/logout', (req, res) => {
     res.render('login');
 });
 router.get('/login', (req, res) => {
+    if (req.session.user) {
+        return res.redirect('/events'); // Redirect if user is already logged in
+    }
     res.render('login');
 });
 router.get('/register', (req, res) => {
