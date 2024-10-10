@@ -3,6 +3,7 @@ const Event = require('../models/Event');
 const router = express.Router();
 
 const authMiddleware = (req, res, next) => {
+    console.log('Auth middleware - Session ID:', req.sessionID);
     console.log('Auth middleware - Full session:', JSON.stringify(req.session, null, 2));
     console.log('Auth middleware - Session user:', req.session.user);
     console.log('Auth middleware - Cookies:', req.headers.cookie);
@@ -70,7 +71,7 @@ router.post('/delete/:id', authMiddleware, async (req, res) => {
         const event = await Event.findById(req.params.id);
         if (event && event.user.toString() === req.session.user._id) {
             await event.deleteOne();
-            consol.log('Event deleted:', event);
+            console.log('Event deleted:', event);
             res.json({ success: true, message: 'Event deleted successfully' });
         } else {
             console.log('Unauthorized or event not found');
