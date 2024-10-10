@@ -2,6 +2,8 @@ const express = require('express');
 const Event = require('../models/Event');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const authMiddleware = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
