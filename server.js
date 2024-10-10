@@ -2,11 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const mongoStore = require('connect-mongo');
 const path = require('path');
 const app = express();
 
+const MONGODB_URI = 'mongodb+srv://ronit:N92cBmF6HKaUb39J@cluster0.x828y.mongodb.net/myAppDb';
+
 mongoose
-  .connect('mongodb+srv://ronit:N92cBmF6HKaUb39J@cluster0.x828y.mongodb.net/myAppDb', {
+  .connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
@@ -15,6 +18,12 @@ mongoose
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+const sessionStore = mongoStore.create({
+  mongoUrl: MONGODB_URI,
+  collectionName: 'sessions'
+});
+
 app.use(session({
   secret: 'secretkey',
   resave: false,
@@ -25,6 +34,11 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production'
   }
 }));
+
+app.use((req, res, next) => {
+  console.log('Session:', req.session);
+  next();
+});
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

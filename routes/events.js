@@ -3,25 +3,33 @@ const Event = require('../models/Event');
 const router = express.Router();
 
 const authMiddleware = (req, res, next) => {
+    console.log('Auth middleware - Full session:', JSON.stringify(req.session, null, 2));
     console.log('Auth middleware - Session user:', req.session.user);
+    console.log('Auth middleware - Cookies:', req.headers.cookie);
+
     if (!req.session.user) {
-        console.log('User not logged in, redirecting to login');
+        console.log('User not authenticated, redirecting to login');
         return res.redirect('/auth/login');
     }
-    console.log('User is logged in');
+    console.log('User authenticated, proceeding to next middleware');
     next();
 };
+
 router.get('/', authMiddleware, async (req, res) => {
-    console.log('GET /events - User:', req.session.user.username);
+    console.log('GET /events - User:', req.session.user);
     try {
         const events = await Event.find({ user: req.session.user._id }).sort({ date: 1 });
         console.log(`Found ${events.length} events for user`);
-        res.render('calendar', { user: req.session.user.username, events });
+        res.render('calendar', {
+            user: req.session.user.username,
+            events: events
+        });
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching events:', error);
         res.status(500).render('error', { error: 'Error loading events' });
     }
 });
+
 router.post('/create', authMiddleware, async (req, res) => {
     console.log('POST /events/create - User:', req.session.user.username);
     const { date, title, description } = req.body;
