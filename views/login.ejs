@@ -17,7 +17,8 @@
                     </div>
                     <% } %>
                         <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
-                        <form id="login-form" action="/auth/login" method="POST">
+                        <div id="successMessage" class="alert alert-success" style="display: none;"></div>
+                        <form id="loginForm">
                             <div class="form-group">
                                 <input type="text" class="form-control" name="username" placeholder="Username" required>
                             </div>
@@ -31,7 +32,7 @@
             </div>
         </div>
     </div>
-    <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+
     <script>
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -54,15 +55,22 @@
                     if (data.error) {
                         document.getElementById('errorMessage').textContent = data.error;
                         document.getElementById('errorMessage').style.display = 'block';
+                        document.getElementById('successMessage').style.display = 'none';
                     } else if (data.redirect) {
-                        console.log('Redirecting to:', data.redirect);
-                        window.location.href = data.redirect;
+                        document.getElementById('successMessage').textContent = 'Login successful. Redirecting...';
+                        document.getElementById('successMessage').style.display = 'block';
+                        document.getElementById('errorMessage').style.display = 'none';
+                        console.log('Attempting to redirect to:', data.redirect);
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 2000); // Delay for 2 seconds to show the success message
                     }
                 })
                 .catch(error => {
                     console.error('Fetch error:', error);
                     document.getElementById('errorMessage').textContent = 'An error occurred. Please try again.';
                     document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'none';
                 });
         });
     </script>
