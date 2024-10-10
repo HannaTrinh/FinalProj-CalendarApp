@@ -41,10 +41,12 @@ router.post('/login', async (req, res) => {
             secure: process.env.NODE_ENV === 'production',
             maxAge: 24 * 60 * 60 * 1000 // 1 day in milliseconds
         });
+
+        res.json({ message: 'Login successful' });
         res.redirect('/events');
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ error: 'An error occurred during login' });
+        res.status(500).json({ success: false, error: 'An error occurred during login' });
     }
 });
 router.get('/logout', (req, res) => {
