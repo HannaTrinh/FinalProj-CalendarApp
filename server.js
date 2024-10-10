@@ -5,8 +5,10 @@ const session = require('express-session');
 const mongoStore = require('connect-mongo');
 const path = require('path');
 const app = express();
+const dotenv = require('dotenv');
+dotenv.config();
 
-const MONGODB_URI = 'mongodb+srv://ronit:N92cBmF6HKaUb39J@cluster0.x828y.mongodb.net/myAppDb';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose
   .connect(MONGODB_URI, {
@@ -25,17 +27,19 @@ const sessionStore = mongoStore.create({
 });
 
 app.use(session({
-  secret: 'secretkey',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24, // 1 day
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
   }
 }));
 
 app.use((req, res, next) => {
+  console.log('Session ID:', req.session.id);
   console.log('Session:', req.session);
   next();
 });

@@ -27,19 +27,30 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({ username });
         if (!user) {
             console.log('User not found');
-            return res.status(400).render('Invalid credentials');
+            return res.status(400).json({ error: 'Invalid credentials' });
         }
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             console.log('Invalid password');
-            return res.status(400).render('Invalid credentials');
+            return res.status(400).json({ error: 'Invalid credentials' });
         }
         req.session.user = { _id: user._id, username: user.username };
-        console.log('Login successful, session set:', req.session);
-        return res.json({ redirect: '/events' });
+        console.log('User authenticated successfully');
+        console.log('Session before save:', req.session);
+
+        req.session.save((err) => {
+            if (err) {
+                console.error('Error saving session:', err);
+                return res.status(500).json({ error: 'Error saving session' });
+            }
+            console.log('Session saved successfully');
+            console.log('Session after save:', req.session);
+            console.log('Sending redirect response');
+            res.json({ redirect: '/events' });
+        });
     } catch (error) {
         console.error('Login error:', error);
-        return res.status(500).json({ error: 'An error occurred during login' });
+        res.status(500).json({ error: 'An error occurred during login' });
     }
 });
 router.get('/logout', (req, res) => {
