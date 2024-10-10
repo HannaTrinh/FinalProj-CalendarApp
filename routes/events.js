@@ -38,7 +38,7 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 router.post('/create', authMiddleware, async (req, res) => {
-    console.log('POST /events/create - User:', req.session.user.username);
+    console.log('POST /events/create - User:', req.user.username);
     const { date, title, description } = req.body;
     const eventDate = new Date(date);
     const newEvent = new Event({ date, title, description, user: req.session.user._id });
@@ -52,11 +52,11 @@ router.post('/create', authMiddleware, async (req, res) => {
     }
 });
 router.post('/edit/:id', authMiddleware, async (req, res) => {
-    console.log('POST /events/edit/:id - User:', req.session.user.username);
+    console.log('POST /events/edit/:id - User:', req.user.username);
     const { title, description } = req.body;
     try {
         const event = await Event.findById(req.params.id);
-        if (event && event.user.toString() === req.session.user._id) {
+        if (event && event.user.toString() === req.user._id) {
             event.title = title;
             event.description = description;
             await event.save();
@@ -72,10 +72,10 @@ router.post('/edit/:id', authMiddleware, async (req, res) => {
     }
 });
 router.post('/delete/:id', authMiddleware, async (req, res) => {
-    console.log('POST /events/delete/:id - User:', req.session.user.username);
+    console.log('POST /events/delete/:id - User:', req.user.username);
     try {
         const event = await Event.findById(req.params.id);
-        if (event && event.user.toString() === req.session.user._id) {
+        if (event && event.user.toString() === req.user._id) {
             await event.deleteOne();
             console.log('Event deleted:', event);
             res.json({ success: true, message: 'Event deleted successfully' });
