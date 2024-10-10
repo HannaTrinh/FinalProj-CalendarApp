@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const router = express.Router();
+
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -20,13 +21,21 @@ router.post('/register', async (req, res) => {
     }
 });
 router.post('/login', async (req, res) => {
+    console.log('Login attempt:', req.body);
     const { username, password } = req.body;
     try {
         const user = await User.findOne({ username });
-        if (!user) return res.status(400).send('Invalid credentials');
+        if (!user) {
+            console.log('User not found');
+            return res.status(400).send('Invalid credentials');
+        }
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).send('Invalid credentials');
+        if (!isMatch) {
+            console.log('Invalid password');
+            return res.status(400).send('Invalid credentials');
+        }
         req.session.user = user;
+        console.log('Login successful, redirecting to /events');
         res.redirect('/events');
     } catch (error) {
         console.error('Login error:', error);
