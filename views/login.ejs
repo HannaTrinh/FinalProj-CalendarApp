@@ -32,6 +32,40 @@
         </div>
     </div>
     <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            console.log('Login form submitted');
+
+            const formData = new FormData(this);
+            fetch('/auth/login', {
+                method: 'POST',
+                body: new URLSearchParams(formData),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.error) {
+                        document.getElementById('errorMessage').textContent = data.error;
+                        document.getElementById('errorMessage').style.display = 'block';
+                    } else if (data.redirect) {
+                        console.log('Redirecting to:', data.redirect);
+                        window.location.href = data.redirect;
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    document.getElementById('errorMessage').textContent = 'An error occurred. Please try again.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                });
+        });
+    </script>
 </body>
 
 </html>
