@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).send('Invalid credentials');
         }
         req.session.user = user;
-        console.log('Login successful, redirecting to /events');
+        console.log('Login successful, session set:', req.session);
         res.redirect('/events');
     } catch (error) {
         console.error('Login error:', error);
